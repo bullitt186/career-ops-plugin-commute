@@ -1,0 +1,15 @@
+{
+  "id": "commute",
+  "name": "Commute",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "description": "Drive time from home to each posting's workplace for evaluation and triage; home stays coordinates, routing runs on your own OSRM/Valhalla",
+  "hooks": ["ingest"],
+  "requiredEnv": [],
+  "allowedHosts": ["nominatim.openstreetmap.org", "localhost"],
+  "allowsLocalhost": true,
+  "entry": "index.mjs",
+  "skill": "skill.md",
+  "humanInTheLoop": true,
+  "homepage": "https://github.com/bullitt186/career-ops-plugin-commute"
+}
