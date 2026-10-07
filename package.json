@@ -1,6 +1,6 @@
 {
   "name": "career-ops-plugin-commute",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "career-ops plugin: drive time from home to each posting's workplace",
   "type": "module",
   "license": "MIT",

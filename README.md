@@ -45,14 +45,21 @@ plugins:
     router_url: http://localhost:8002
     time_factor: 1.0         # scale free-flow times to your real door-to-door times
     max_minutes: 45          # your limit; rows above it are flagged
-    # nominatim_url: https://nominatim.example.org   # self-hosted geocoder (no rate gap)
+    # nominatim_url: http://localhost:8080           # self-hosted geocoder on this machine (no rate gap)
     # nominatim_email: you@example.org               # identifies you to the public Nominatim, as its policy asks
     # nominatim_gap_ms: 2200                         # raise when several instances share one IP
 ```
 
-Then run `node plugins.mjs run commute`.
+Then:
 
-**Routing backend.** Inside the plugin engine, egress is limited to the hosts in `manifest.json` and to `localhost`. Run Valhalla or OSRM on the same machine (both have official Docker images), or forward its port to `localhost`.
+```bash
+node plugins.mjs run commute ingest           # all tracker + pending rows
+node plugins.mjs run commute search "<url>"   # just one posting, e.g. while evaluating it
+```
+
+The plugin has two hooks, so `run` needs the hook name. The full run works in portions that fit the plugin engine's 15-second hook limit. If it reports `N left: run again`, run it again; after the first pass, runs are incremental and fast. The single-posting form takes a few seconds and is what the skill uses during `oferta`. It uses the `search` hook only because that is the one hook that takes an argument (see [#4827](https://github.com/career-ops-hq/career-ops/issues/4827)).
+
+**Routing backend, and why the plugin asks for `localhost`.** The router receives your home coordinates, so the plugin only talks to a router you run yourself. Self-hosted Valhalla and OSRM speak plain HTTP. The plugin engine allows that only on loopback (`allowsLocalhost`), and private LAN addresses are blocked. So run the router on the same machine (both have official Docker images), or forward its port to `localhost`. The only other host the plugin reaches is `nominatim.openstreetmap.org`. A self-hosted geocoder (`nominatim_url`) works on `localhost` too, or with the standalone CLI.
 
 **`time_factor`.** Routers estimate free-flow times. Compare a few commutes you know, then set `time_factor` to `real / estimated`. Changing it recomputes every row.
 

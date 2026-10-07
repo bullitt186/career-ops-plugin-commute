@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // Standalone CLI, for setups that run the commute update outside the career-ops
 // plugin engine (cron, a container's daily job). Inside career-ops use
-// `node plugins.mjs run commute`, which routes all egress through ctx.fetch.
+// `node plugins.mjs run commute ingest`, which routes all egress through ctx.fetch.
 //
 //   node commute.mjs [update]   tracker + pending pipeline rows → data/commute.tsv
+//   node commute.mjs update --only <url>   just that posting
 //   node commute.mjs pending    triage lines for the pending pipeline (no network)
 //
 // Settings from the environment (the plugin reads the same keys, lower-case and
@@ -26,6 +27,7 @@ if (process.argv[2] === 'pending') {
   const settings = Object.fromEntries(Object.entries(process.env)
     .filter(([k]) => k.startsWith('COMMUTE_'))
     .map(([k, v]) => [k.slice('COMMUTE_'.length).toLowerCase(), v]));
-  const r = await update(root, { settings, fetch: globalThis.fetch });
+  const i = process.argv.indexOf('--only');
+  const r = await update(root, { settings, fetch: globalThis.fetch, only: i > 0 ? process.argv[i + 1] : '' });
   if (r.failed) process.exitCode = 1;
 }

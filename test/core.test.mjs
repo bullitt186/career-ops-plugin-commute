@@ -167,6 +167,50 @@ test('ctx.fetch semantics (throws on HTTP >= 400): 400 = unroutable, 5xx = route
   await assert.rejects(createCommute({ fetch: thrower(429), routerUrl: 'http://localhost:8002', sleep: nosleep }).search('Leeds'), /Nominatim 429/);
 });
 
+function fixtureRoot() {
+  const root = mkdtempSync(path.join(tmpdir(), 'commute-'));
+  mkdirSync(path.join(root, 'data'));
+  writeFileSync(path.join(root, 'data/applications.md'), TRACKER);
+  writeFileSync(path.join(root, 'data/pipeline.md'), PIPE);
+  return root;
+}
+const PLACES = {
+  Leeds: LEEDS,
+  'Lyon, France': [{ lat: '45.76', lon: '4.84', place_rank: 16, category: 'boundary', addresstype: 'city' }],
+  'Leeds Wellington Street': [{ lat: '53.79', lon: '-1.55', place_rank: 26, category: 'highway' }],
+};
+const SETTINGS = { home_lat: 53.8, home_lon: -1.55, router_url: 'http://localhost:8002' };
+
+test('update only: just that posting; unknown URL looks nothing up; unchanged row is skipped', async () => {
+  const root = fixtureRoot();
+  const s = stub(PLACES);
+  const r = await update(root, { settings: SETTINGS, fetch: s.fetch, only: ' https://e.com/j ', log: () => {} });
+  assert.equal(r.added, 1);
+  assert.deepEqual(readTsv(readFileSync(path.join(root, 'data/commute.tsv'), 'utf8')).map((x) => x.url), ['https://e.com/j']);
+  const n = s.calls.length;
+  const logs = [];
+  const u = await update(root, { settings: SETTINGS, fetch: s.fetch, only: 'https://nope.example/1', log: (m) => logs.push(m) });
+  assert.equal(u.added, 0);
+  assert.equal(s.calls.length, n, 'unknown URL must not reach the network');
+  assert.match(logs[0], /not in the tracker or the pending pipeline/);
+  assert.equal((await update(root, { settings: SETTINGS, fetch: s.fetch, only: 'https://e.com/j', log: () => {} })).added, 0);
+  assert.equal(s.calls.length, n);
+});
+
+test('update budgetMs: stops starting rows near the budget, writes what it has, next run continues', async () => {
+  const root = fixtureRoot();
+  const s = stub(PLACES);
+  const clock = () => { let t = 0; return () => (t += 3000); }; // start 3 s, then +3 s per check
+  const logs = [];
+  const r = await update(root, { settings: SETTINGS, fetch: s.fetch, budgetMs: 10_000, now: clock(), log: (m) => logs.push(m) });
+  assert.equal(r.added, 2);
+  assert.equal(r.remaining, 1);
+  assert.match(logs.at(-1), /1 left: run again/);
+  assert.equal(readTsv(readFileSync(path.join(root, 'data/commute.tsv'), 'utf8')).length, 2, 'partial run is persisted');
+  const r2 = await update(root, { settings: SETTINGS, fetch: s.fetch, budgetMs: 10_000, now: clock(), log: () => {} });
+  assert.deepEqual([r2.added, r2.remaining, r2.total], [1, 0, 3]);
+});
+
 test('update: skipped without coordinates or without a router', async () => {
   const root = mkdtempSync(path.join(tmpdir(), 'commute-'));
   const calls = [];
