@@ -2,7 +2,7 @@
 
 A community plugin for [career-ops](https://github.com/career-ops-hq/career-ops): **drive time from your home to each posting's workplace**, so `oferta` evaluations and pipeline triage can weigh reachability as a fact instead of guessing from a city name.
 
-> Status: pre-release. The plugin shape is being discussed upstream in [career-ops-hq/career-ops#4827](https://github.com/career-ops-hq/career-ops/issues/4827). It is not in the registry yet.
+> Status: approved community plugin in the [career-ops registry](https://github.com/career-ops-hq/career-ops/blob/main/plugins-registry/commute.json), pinned to the reviewed v0.2.0 release.
 
 ## What it does
 
@@ -25,8 +25,7 @@ The companion `skill.md` tells your agent how to read the file during evaluation
 ## Install
 
 ```bash
-# Before listing: install directly from this repo at a pinned commit
-node plugins.mjs add bullitt186/career-ops-plugin-commute --sha <40-hex-commit>
+node plugins.mjs add commute
 node plugins.mjs enable commute            # shows the capability card
 node plugins.mjs enable commute --confirm  # grants it
 ```
