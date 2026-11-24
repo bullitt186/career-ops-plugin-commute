@@ -10,6 +10,6 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions: [Sem
 - One setup for all coding agents and people ([repo-kit](https://github.com/bullitt186/repo-kit)):
   `AGENTS.md` is the single instruction file (`CLAUDE.md` imports it), `CONTRIBUTING.md` holds
   the Definition of Done that every pull request is reviewed against, a pull request template,
-  issue forms, and architecture decision records in `docs/adr/` (ADR-0002 privacy of the home
+  issue forms, `docs/SCOPE.md` (purpose and non-goals), and architecture decision records in `docs/adr/` (ADR-0002 privacy of the home
   location). The new `PR hygiene` check fails when code changes come without a test or
   changelog change, or when an ADR or a Markdown link is broken.

@@ -89,6 +89,8 @@ issues and ADRs are not up for silent change.
 
 ### Purpose
 
+Scope and non-goals: [docs/SCOPE.md](docs/SCOPE.md)
+
 A community plugin for [career-ops](https://github.com/career-ops-hq/career-ops):
 it computes the drive time from the user's home to each posting's workplace and
 writes `data/commute.tsv`, which the companion `skill.md` tells the agent how to
