@@ -80,4 +80,6 @@ node test/smoke.mjs        # manifest ↔ hooks
 node <career-ops>/plugin-audit.mjs .
 ```
 
+Contributing: [CONTRIBUTING.md](CONTRIBUTING.md) (Definition of Done) and [AGENTS.md](AGENTS.md).
+
 MIT licensed.

@@ -1,0 +1,2 @@
+# repo-kit settings for PR hygiene (all optional). See https://github.com/bullitt186/repo-kit
+# Defaults fit: tests live in test/, *.md (README, skill.md) is not code.
