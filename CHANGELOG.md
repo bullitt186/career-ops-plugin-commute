@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions: [Sem
 
 ### Contributors
 
+- The dev tools pin `qs` to 6.16.1 or later and `minimatch` to 11.0.1 or later through npm
+  `overrides`; Stryker and ESLint pull them in transitively at versions with known advisories.
+  Nothing changes for users of the plugin.
 - CI runs the tests on Node.js 18 and the current LTS, ESLint, Prettier in check mode and a type
   check (`tsc --checkJs`) on every pull request and on `main`; a weekly Stryker run reports the
   mutation score. The dev tools are pinned in `package-lock.json` (Dependabot npm). The code was

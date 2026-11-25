@@ -24,5 +24,9 @@
     "globals": "17.14.0",
     "prettier": "3.10.1",
     "typescript": "6.0.3"
+  },
+  "overrides": {
+    "minimatch": "^11.0.1",
+    "qs": "^6.16.1"
   }
 }
