@@ -6,7 +6,7 @@ cd "$(git rev-parse --show-toplevel)" || exit 0
 [ -z "$(git status --porcelain)" ] && exit 0
 
 # The repository's fast check (lint, format check, type check, unit tests), as in AGENTS.md.
-FAST_CHECK="npm test"
+FAST_CHECK="npm test && npm run --silent lint && npm run --silent typecheck"
 
 if ! out=$(bash -c "$FAST_CHECK" 2>&1); then
   printf 'Fast check failed. Fix it before stopping:\n%s\n' "$(printf '%s' "$out" | tail -40)" >&2

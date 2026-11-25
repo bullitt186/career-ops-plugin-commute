@@ -7,6 +7,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions: [Sem
 
 ### Contributors
 
+- CI runs the tests on Node.js 18 and the current LTS, ESLint, Prettier in check mode and a type
+  check (`tsc --checkJs`) on every pull request and on `main`; a weekly Stryker run reports the
+  mutation score. The dev tools are pinned in `package-lock.json` (Dependabot npm). The code was
+  reformatted by Prettier; nothing changes for users of the plugin.
 - One setup for all coding agents and people ([repo-kit](https://github.com/bullitt186/repo-kit)):
   `AGENTS.md` is the single instruction file (`CLAUDE.md` imports it), `CONTRIBUTING.md` holds
   the Definition of Done that every pull request is reviewed against, a pull request template,

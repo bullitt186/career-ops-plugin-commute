@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "Mutation testing (repo-kit CI standard): npm run mutate (changed files), npm run mutate:all (weekly workflow). The tests are plain node scripts, so the command runner runs `npm test` per mutant. Reporting only, never blocks.",
+  "testRunner": "command",
+  "commandRunner": { "command": "npm test" },
+  "mutate": ["lib/**/*.mjs", "index.mjs", "commute.mjs"],
+  "reporters": ["clear-text", "progress", "html", "json"],
+  "thresholds": { "high": 80, "low": 60, "break": null },
+  "concurrency": 2,
+  "tempDirName": ".stryker-tmp"
+}

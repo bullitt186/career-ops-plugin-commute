@@ -160,13 +160,13 @@ registry, pinned to a reviewed release. See `README.md`.
 
 | Task | Command |
 |---|---|
-| Install / set up | Node.js 18+; no dependencies to install |
-| Fast check (before every commit, also the stop hook) | `npm test` (`node test/core.test.mjs && node test/smoke.mjs`) |
-| Full check (before every pull request) | `npm test`; with a career-ops checkout also `node <career-ops>/plugin-audit.mjs .` (the registry's audit) |
-| Mutation testing of changed code | not set up (#3) |
+| Install / set up | Node.js 18+ to run the plugin and its tests (no runtime dependencies); `npm ci` on a current Node.js LTS for the dev tools (ESLint, Prettier, TypeScript, Stryker) |
+| Fast check (before every commit, also the stop hook) | `npm test && npm run lint && npm run typecheck` (tests, ESLint, Prettier in check mode, `tsc --checkJs`) |
+| Full check (before every pull request) | the fast check; with a career-ops checkout also `node <career-ops>/plugin-audit.mjs .` (the registry's audit). CI (`ci.yml`) runs the tests on Node.js 18 and the current LTS |
+| Mutation testing of changed code | `npm run mutate` (Stryker on the source files changed against `origin/main`; report in `reports/mutation/`); weekly in `mutation.yml` |
 
-There is no CI for the tests yet (#1), and no linter, formatter or type checker (#3); run the
-fast check locally before every commit.
+Type check settings and their relaxations are in `jsconfig.json` (add JSDoc types to a function
+when you change it). `npm run format` rewrites the formatting.
 
 ### Rules specific to this repository
 
