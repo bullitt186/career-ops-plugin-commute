@@ -1,0 +1,20 @@
+{
+  // Type check of the plugin (repo-kit CI standard, category 3): `npm run typecheck`.
+  // Strict, except: functions without JSDoc types are allowed (noImplicitAny; add JSDoc when
+  // you change a function), and `catch (e)` stays `any` because the code reads e.message.
+  // The tests are not type-checked: their fetch stubs implement only what the code uses.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "checkJs": true,
+    "allowJs": true,
+    "noEmit": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "useUnknownInCatchVariables": false,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["*.mjs", "lib/**/*.mjs"]
+}

@@ -1,4 +1,6 @@
-node_modules/
 .DS_Store
 .claude/settings.local.json
 .claude/worktrees/
+.stryker-tmp/
+node_modules/
+reports/

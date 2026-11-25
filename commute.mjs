@@ -22,11 +22,15 @@ const root = path.resolve(process.env.CAREER_OPS_DIR || process.cwd());
 
 if (process.argv[2] === 'pending') {
   const lines = pending(root);
-  process.stdout.write(lines.length ? `# Pending postings (token | company | title | location | drive | link)\n${lines.join('\n')}\n` : '');
+  process.stdout.write(
+    lines.length ? `# Pending postings (token | company | title | location | drive | link)\n${lines.join('\n')}\n` : '',
+  );
 } else {
-  const settings = Object.fromEntries(Object.entries(process.env)
-    .filter(([k]) => k.startsWith('COMMUTE_'))
-    .map(([k, v]) => [k.slice('COMMUTE_'.length).toLowerCase(), v]));
+  const settings = Object.fromEntries(
+    Object.entries(process.env)
+      .filter(([k]) => k.startsWith('COMMUTE_'))
+      .map(([k, v]) => [k.slice('COMMUTE_'.length).toLowerCase(), v]),
+  );
   const i = process.argv.indexOf('--only');
   const r = await update(root, { settings, fetch: globalThis.fetch, only: i > 0 ? process.argv[i + 1] : '' });
   if (r.failed) process.exitCode = 1;

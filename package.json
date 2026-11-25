@@ -5,8 +5,24 @@
   "type": "module",
   "license": "MIT",
   "private": true,
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "test": "node test/core.test.mjs && node test/smoke.mjs"
+    "test": "node test/core.test.mjs && node test/smoke.mjs",
+    "lint": "eslint . && prettier --check '**/*.mjs' '*.json' 'jsconfig.json'",
+    "format": "prettier --write '**/*.mjs' '*.json'",
+    "typecheck": "tsc -p jsconfig.json",
+    "mutate": "bash scripts/mutate.sh",
+    "mutate:all": "stryker run"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@stryker-mutator/core": "10.1.1",
+    "@types/node": "18.19.130",
+    "eslint": "10.14.0",
+    "globals": "17.14.0",
+    "prettier": "3.10.1",
+    "typescript": "6.0.3"
   }
 }

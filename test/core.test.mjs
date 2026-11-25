@@ -9,8 +9,21 @@ const tests = [];
 const test = (name, fn) => tests.push([name, fn]);
 
 import {
-  placeQuery, precisionOf, cleanCompany, trackerJobs, pipelineJobs, pendingRows, triageLines,
-  haversineKm, readTsv, writeTsv, homeOf, scanLocations, createCommute, update, pending,
+  placeQuery,
+  precisionOf,
+  cleanCompany,
+  trackerJobs,
+  pipelineJobs,
+  pendingRows,
+  triageLines,
+  haversineKm,
+  readTsv,
+  writeTsv,
+  homeOf,
+  scanLocations,
+  createCommute,
+  update,
+  pending,
 } from '../lib/core.mjs';
 
 test('placeQuery: work-mode noise off, first of several places, remote recognised', () => {
@@ -52,7 +65,10 @@ test('trackerJobs: by header name; optional Location; URL from the report when t
     { url: 'https://e.com/2', company: 'X', location: '' },
   ]);
   // career-ops default layout: no Location column.
-  assert.deepEqual(trackerJobs(TRACKER.replace('Location', 'Notes2')).map((j) => j.location), ['', '']);
+  assert.deepEqual(
+    trackerJobs(TRACKER.replace('Location', 'Notes2')).map((j) => j.location),
+    ['', ''],
+  );
   const noUrl = TRACKER.replace(' URL |', ' X |').replace('https://jobs.example.com/1', '');
   const rep = (f) => (f === 'reports/001.md' ? 'https://r/1' : '');
   assert.equal(trackerJobs(noUrl, rep).length, 0); // links are x.md / y.md, not reports/: no URL anywhere
@@ -72,10 +88,20 @@ test('pipelineJobs / pendingRows / triageLines', () => {
   ]);
   const pend = pendingRows(PIPE);
   assert.equal(pend.length, 3);
-  assert.deepEqual(triageLines(pend, new Map([['https://e.com/j', { min: '41' }], ['https://jobs.example.com/4', { precision: 'remote', min: '' }]]), new Set(['https://e.com/news'])), [
-    'local:jds/board-4.md | Globex | Head | Lyon, France | remote | https://jobs.example.com/4',
-    'https://e.com/j | Initech | Lead | Leeds Wellington Street | 41 min | ',
-  ]);
+  assert.deepEqual(
+    triageLines(
+      pend,
+      new Map([
+        ['https://e.com/j', { min: '41' }],
+        ['https://jobs.example.com/4', { precision: 'remote', min: '' }],
+      ]),
+      new Set(['https://e.com/news']),
+    ),
+    [
+      'local:jds/board-4.md | Globex | Head | Lyon, France | remote | https://jobs.example.com/4',
+      'https://e.com/j | Initech | Lead | Leeds Wellington Street | 41 min | ',
+    ],
+  );
 });
 
 test('tsv round trip, scan-history locations, home only from coordinates', () => {
@@ -109,9 +135,11 @@ const nosleep = async () => {};
 
 test('locate: employer site near the city wins; regions are not workplaces; city-states are', async () => {
   const { fetch } = stub({
-    Leeds: LEEDS, 'Acme, Leeds': [{ lat: '53.79', lon: '-1.54', place_rank: 30, category: 'office' }],
+    Leeds: LEEDS,
+    'Acme, Leeds': [{ lat: '53.79', lon: '-1.54', place_rank: 30, category: 'office' }],
     'Far, Leeds': [{ lat: '51.5', lon: '-0.1', place_rank: 30, category: 'office' }],
-    'West Yorkshire': REGION, Berlin: BERLIN,
+    'West Yorkshire': REGION,
+    Berlin: BERLIN,
   });
   const c = createCommute({ fetch, routerUrl: 'http://localhost:8002', sleep: nosleep });
   assert.equal((await c.locate({ location: 'Leeds', company: 'Acme Ltd' })).precision, 'poi');
@@ -122,14 +150,19 @@ test('locate: employer site near the city wins; regions are not workplaces; city
 });
 
 test('route: valhalla and osrm shapes; factor applied; router down throws', async () => {
-  const a = { lat: 53.8, lon: -1.55 }, b = { lat: 53.48, lon: -2.24 };
+  const a = { lat: 53.8, lon: -1.55 },
+    b = { lat: 53.48, lon: -2.24 };
   const v = createCommute({ fetch: stub({}).fetch, routerUrl: 'http://localhost:8002/', sleep: nosleep });
   assert.deepEqual(await v.route(a, b, 0.9), { km: 41, min: 36 });
   const osrm = stub({}, { router: 'osrm' });
   const o = createCommute({ fetch: osrm.fetch, router: 'osrm', routerUrl: 'http://localhost:5000', sleep: nosleep });
   assert.deepEqual(await o.route(a, b), { km: 41, min: 40 });
   assert.equal(osrm.calls[0], 'http://localhost:5000/route/v1/driving/-1.55,53.8;-2.24,53.48?overview=false');
-  const d = createCommute({ fetch: stub({}, { down: true }).fetch, routerUrl: 'http://localhost:8002', sleep: nosleep });
+  const d = createCommute({
+    fetch: stub({}, { down: true }).fetch,
+    routerUrl: 'http://localhost:8002',
+    sleep: nosleep,
+  });
   await assert.rejects(d.route(a, b), /router unreachable \(ECONNREFUSED\)/);
 });
 
@@ -139,18 +172,34 @@ test('update: incremental, home never sent to the geocoder, scan-history fills a
   writeFileSync(path.join(root, 'data/applications.md'), TRACKER.replace('Location', 'Notes2'));
   writeFileSync(path.join(root, 'data/scan-history.tsv'), 'url\tlocation\nhttps://jobs.example.com/1\tLeeds\n');
   writeFileSync(path.join(root, 'data/pipeline.md'), PIPE);
-  const s = stub({ Leeds: LEEDS, 'Lyon, France': [{ lat: '45.76', lon: '4.84', place_rank: 16, category: 'boundary', addresstype: 'city' }] });
-  const settings = { home_lat: 53.8, home_lon: -1.55, home: '1 Secret Street', max_minutes: 30, time_factor: 0.9, router_url: 'http://localhost:8002' };
+  const s = stub({
+    Leeds: LEEDS,
+    'Lyon, France': [{ lat: '45.76', lon: '4.84', place_rank: 16, category: 'boundary', addresstype: 'city' }],
+  });
+  const settings = {
+    home_lat: 53.8,
+    home_lon: -1.55,
+    home: '1 Secret Street',
+    max_minutes: 30,
+    time_factor: 0.9,
+    router_url: 'http://localhost:8002',
+  };
   const logs = [];
   const r = await update(root, { settings, fetch: s.fetch, log: (m) => logs.push(m) });
   assert.equal(r.total, 3);
-  assert.ok(s.calls.every((u) => !u.includes('Secret')), 'home address must never leave the machine');
+  assert.ok(
+    s.calls.every((u) => !u.includes('Secret')),
+    'home address must never leave the machine',
+  );
   const rows = readTsv(readFileSync(path.join(root, 'data/commute.tsv'), 'utf8'));
-  assert.deepEqual(rows.map((x) => [x.url, x.precision, x.min]), [
-    ['https://jobs.example.com/1', 'city', '36'],
-    ['https://jobs.example.com/4', 'city', '36'],
-    ['https://e.com/j', 'unknown', ''],
-  ]);
+  assert.deepEqual(
+    rows.map((x) => [x.url, x.precision, x.min]),
+    [
+      ['https://jobs.example.com/1', 'city', '36'],
+      ['https://jobs.example.com/4', 'city', '36'],
+      ['https://e.com/j', 'unknown', ''],
+    ],
+  );
   assert.match(logs.at(-1), /3 updated, 3 total, 2 over 30 min/);
   // Second run: nothing changed, nothing looked up.
   const before = s.calls.length;
@@ -160,11 +209,23 @@ test('update: incremental, home never sent to the geocoder, scan-history fills a
 });
 
 test('ctx.fetch semantics (throws on HTTP >= 400): 400 = unroutable, 5xx = router down, 429 = Nominatim retry', async () => {
-  const thrower = (status) => async () => { throw Object.assign(new Error(`HTTP ${status}`), { status }); };
-  const a = { lat: 53.8, lon: -1.55 }, b = { lat: 60, lon: 5 };
-  assert.deepEqual(await createCommute({ fetch: thrower(400), routerUrl: 'http://localhost:8002', sleep: nosleep }).route(a, b), {});
-  await assert.rejects(createCommute({ fetch: thrower(503), routerUrl: 'http://localhost:8002', sleep: nosleep }).route(a, b), /router 503/);
-  await assert.rejects(createCommute({ fetch: thrower(429), routerUrl: 'http://localhost:8002', sleep: nosleep }).search('Leeds'), /Nominatim 429/);
+  const thrower = (status) => async () => {
+    throw Object.assign(new Error(`HTTP ${status}`), { status });
+  };
+  const a = { lat: 53.8, lon: -1.55 },
+    b = { lat: 60, lon: 5 };
+  assert.deepEqual(
+    await createCommute({ fetch: thrower(400), routerUrl: 'http://localhost:8002', sleep: nosleep }).route(a, b),
+    {},
+  );
+  await assert.rejects(
+    createCommute({ fetch: thrower(503), routerUrl: 'http://localhost:8002', sleep: nosleep }).route(a, b),
+    /router 503/,
+  );
+  await assert.rejects(
+    createCommute({ fetch: thrower(429), routerUrl: 'http://localhost:8002', sleep: nosleep }).search('Leeds'),
+    /Nominatim 429/,
+  );
 });
 
 function fixtureRoot() {
@@ -186,27 +247,51 @@ test('update only: just that posting; unknown URL looks nothing up; unchanged ro
   const s = stub(PLACES);
   const r = await update(root, { settings: SETTINGS, fetch: s.fetch, only: ' https://e.com/j ', log: () => {} });
   assert.equal(r.added, 1);
-  assert.deepEqual(readTsv(readFileSync(path.join(root, 'data/commute.tsv'), 'utf8')).map((x) => x.url), ['https://e.com/j']);
+  assert.deepEqual(
+    readTsv(readFileSync(path.join(root, 'data/commute.tsv'), 'utf8')).map((x) => x.url),
+    ['https://e.com/j'],
+  );
   const n = s.calls.length;
   const logs = [];
-  const u = await update(root, { settings: SETTINGS, fetch: s.fetch, only: 'https://nope.example/1', log: (m) => logs.push(m) });
+  const u = await update(root, {
+    settings: SETTINGS,
+    fetch: s.fetch,
+    only: 'https://nope.example/1',
+    log: (m) => logs.push(m),
+  });
   assert.equal(u.added, 0);
   assert.equal(s.calls.length, n, 'unknown URL must not reach the network');
   assert.match(logs[0], /not in the tracker or the pending pipeline/);
-  assert.equal((await update(root, { settings: SETTINGS, fetch: s.fetch, only: 'https://e.com/j', log: () => {} })).added, 0);
+  assert.equal(
+    (await update(root, { settings: SETTINGS, fetch: s.fetch, only: 'https://e.com/j', log: () => {} })).added,
+    0,
+  );
   assert.equal(s.calls.length, n);
 });
 
 test('update budgetMs: stops starting rows near the budget, writes what it has, next run continues', async () => {
   const root = fixtureRoot();
   const s = stub(PLACES);
-  const clock = () => { let t = 0; return () => (t += 3000); }; // start 3 s, then +3 s per check
+  const clock = () => {
+    let t = 0;
+    return () => (t += 3000);
+  }; // start 3 s, then +3 s per check
   const logs = [];
-  const r = await update(root, { settings: SETTINGS, fetch: s.fetch, budgetMs: 10_000, now: clock(), log: (m) => logs.push(m) });
+  const r = await update(root, {
+    settings: SETTINGS,
+    fetch: s.fetch,
+    budgetMs: 10_000,
+    now: clock(),
+    log: (m) => logs.push(m),
+  });
   assert.equal(r.added, 2);
   assert.equal(r.remaining, 1);
   assert.match(logs.at(-1), /1 left: run again/);
-  assert.equal(readTsv(readFileSync(path.join(root, 'data/commute.tsv'), 'utf8')).length, 2, 'partial run is persisted');
+  assert.equal(
+    readTsv(readFileSync(path.join(root, 'data/commute.tsv'), 'utf8')).length,
+    2,
+    'partial run is persisted',
+  );
   const r2 = await update(root, { settings: SETTINGS, fetch: s.fetch, budgetMs: 10_000, now: clock(), log: () => {} });
   assert.deepEqual([r2.added, r2.remaining, r2.total], [1, 0, 3]);
 });
@@ -214,15 +299,27 @@ test('update budgetMs: stops starting rows near the budget, writes what it has, 
 test('update: skipped without coordinates or without a router', async () => {
   const root = mkdtempSync(path.join(tmpdir(), 'commute-'));
   const calls = [];
-  const fetch = async (u) => { calls.push(u); throw new Error('no network'); };
-  assert.ok((await update(root, { settings: { home: 'x', router_url: 'http://localhost:8002' }, fetch, log: () => {} })).skipped);
+  const fetch = async (u) => {
+    calls.push(u);
+    throw new Error('no network');
+  };
+  assert.ok(
+    (await update(root, { settings: { home: 'x', router_url: 'http://localhost:8002' }, fetch, log: () => {} }))
+      .skipped,
+  );
   assert.ok((await update(root, { settings: { home_lat: '1', home_lon: '2' }, fetch, log: () => {} })).skipped);
   assert.equal(calls.length, 0);
 });
 
 let failed = 0;
 for (const [name, fn] of tests) {
-  try { await fn(); console.log(`ok - ${name}`); } catch (e) { failed++; console.log(`not ok - ${name}\n${e.stack}`); }
+  try {
+    await fn();
+    console.log(`ok - ${name}`);
+  } catch (e) {
+    failed++;
+    console.log(`not ok - ${name}\n${e.stack}`);
+  }
 }
 console.log(`${tests.length - failed}/${tests.length} passed`);
 if (failed) process.exitCode = 1;
