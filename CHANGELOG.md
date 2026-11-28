@@ -7,6 +7,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions: [Sem
 
 ### Contributors
 
+- The type check no longer checks plain JavaScript packages in `node_modules`
+  (`maxNodeModuleJsDepth: 0` in `jsconfig.json`). TypeScript 7 and `@types/node` 26 failed on
+  `punycode`, a dependency of ESLint. Nothing changes for users of the plugin.
 - The dev tools pin `qs` to 6.16.1 or later and `minimatch` to 11.0.1 or later through npm
   `overrides`; Stryker and ESLint pull them in transitively at versions with known advisories.
   Nothing changes for users of the plugin.
