@@ -3,6 +3,8 @@
   // Strict, except: functions without JSDoc types are allowed (noImplicitAny; add JSDoc when
   // you change a function), and `catch (e)` stays `any` because the code reads e.message.
   // The tests are not type-checked: their fetch stubs implement only what the code uses.
+  // maxNodeModuleJsDepth 0: a jsconfig.json defaults to 2, so tsc would check plain JS packages
+  // from node_modules (punycode via @types/node and ESLint) and fail on code that is not ours.
   "compilerOptions": {
     "target": "ES2022",
     "module": "NodeNext",
@@ -14,6 +16,7 @@
     "noImplicitAny": false,
     "useUnknownInCatchVariables": false,
     "skipLibCheck": true,
+    "maxNodeModuleJsDepth": 0,
     "types": ["node"]
   },
   "include": ["*.mjs", "lib/**/*.mjs"]
